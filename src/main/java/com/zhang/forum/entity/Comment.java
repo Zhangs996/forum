@@ -1,6 +1,7 @@
 package com.zhang.forum.entity;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Comment {
 
@@ -89,5 +90,25 @@ public class Comment {
                 ", status=" + status +
                 ", createTime=" + createTime +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment)) return false;
+        Comment comment = (Comment) o;
+        return getId() == comment.getId() &&
+                getUserId() == comment.getUserId() &&
+                getEntityType() == comment.getEntityType() &&
+                getEntityId() == comment.getEntityId() &&
+                getTargetId() == comment.getTargetId() &&
+                getStatus() == comment.getStatus() &&
+                Objects.equals(getContent(), comment.getContent()) &&
+                Objects.equals(getCreateTime(), comment.getCreateTime());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUserId(), getEntityType(), getEntityId(), getTargetId(), getContent(), getStatus(), getCreateTime());
     }
 }

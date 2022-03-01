@@ -1,9 +1,12 @@
 package com.zhang.forum;
 
 import com.zhang.forum.dao.DiscussPostMapper;
+import com.zhang.forum.dao.LoginTicketMapper;
+import com.zhang.forum.dao.MessageMapper;
 import com.zhang.forum.dao.UserMapper;
 import com.zhang.forum.entity.DiscussPost;
 import com.zhang.forum.entity.LoginTicket;
+import com.zhang.forum.entity.Message;
 import com.zhang.forum.entity.User;
 //不是import org.junit.jupiter.api.Test;
 import org.junit.Test;
@@ -32,6 +35,11 @@ public class MapperTests {
     @Autowired
     private DiscussPostMapper discussPostMapper;
 
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
+    private MessageMapper messageMapper;
     @Test
     public void testSelectUser() {
         System.out.println(userMapper);
@@ -44,6 +52,8 @@ public class MapperTests {
         System.out.println(user);
 
         user = userMapper.selectByName("SYSTEM");
+        System.out.println(user);
+        user = userMapper.selectByName("zhang");
         System.out.println(user);
 
         user = userMapper.selectByEmail("643396092@qq.com");
@@ -88,5 +98,29 @@ public class MapperTests {
         System.out.println(rows);
     }
 
+    @Test
+    public void testInsertLoginTicket(){
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setTicket("abc");
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+1000*60*60));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }
+    @Test
+    public void testSelectLoginTicket() {
+        LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
 
+        loginTicketMapper.updateStatus("abc", 1);
+        loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket.toString());
+    }
+    @Test
+    public void testSelectLetters(){
+        List<Message> list = messageMapper.selectConversations(111, 0, 12);
+        for(Message message:list){
+            System.out.println(message);
+        }
+    }
 }

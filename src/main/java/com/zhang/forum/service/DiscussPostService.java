@@ -2,6 +2,7 @@ package com.zhang.forum.service;
 
 import com.zhang.forum.dao.DiscussPostMapper;
 import com.zhang.forum.entity.DiscussPost;
+import com.zhang.forum.util.SensitiveFilter;
 import org.elasticsearch.common.cache.CacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class DiscussPostService {
 
     @Autowired
     private DiscussPostMapper discussPostMapper;
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
 
 
     public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit, int orderMode) {
@@ -39,6 +42,13 @@ public class DiscussPostService {
             throw new IllegalArgumentException("参数不能为空!");
         }
 
+//        转义html标签
+        post.setTitle(HtmlUtils.htmlEscape(post.getContent()));
+        post.setContent(HtmlUtils.htmlEscape(post.getContent()));
+//        过滤敏感词
+        post.setTitle(sensitiveFilter.filter(post.getTitle()));
+        post.setContent(sensitiveFilter.filter(post.getContent()));
+//        插入数据
         return discussPostMapper.insertDiscussPost(post);
     }
 

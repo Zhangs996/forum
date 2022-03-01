@@ -56,7 +56,6 @@ public class HomeController {
         }
         model.addAttribute("discussPosts", discussPosts);
         model.addAttribute("orderMode", orderMode);
-        System.out.println("hahaha");
         return "/index";
     }
 
