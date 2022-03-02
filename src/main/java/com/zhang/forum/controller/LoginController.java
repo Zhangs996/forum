@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.data.redis.core.RedisTemplate;
 //import org.springframework.security.core.context.SecurityContext;
 //import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -49,6 +50,9 @@ public class LoginController implements ForumConstant {
 
     @Autowired
     private Producer kaptchaProducer;//这个Producer已经在Config包下实例化了
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     @Value("${server.servlet.context-path}")
@@ -106,20 +110,20 @@ public class LoginController implements ForumConstant {
         String text = kaptchaProducer.createText();
         BufferedImage image = kaptchaProducer.createImage(text);
 
-        // 将验证码存入session
-         session.setAttribute("kaptcha", text);
+//         //将验证码存入session
+//         session.setAttribute("kaptcha", text);
 
-//        // 验证码的归属
-//        String kaptchaOwner = ForumUtil.generateUUID();
-//        Cookie cookie = new Cookie("kaptchaOwner", kaptchaOwner);
-//        cookie.setMaxAge(60);
-//        cookie.setPath(contextPath);
-//        response.addCookie(cookie);
-//        // 将验证码存入Redis
-//        String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
-////        redisTemplate.opsForValue().set(redisKey, text, 60, TimeUnit.SECONDS);
-//
-//        // response将图片输出给浏览器
+        // 验证码的归属
+        String kaptchaOwner = ForumUtil.generateUUID();
+        Cookie cookie = new Cookie("kaptchaOwner", kaptchaOwner);
+        cookie.setMaxAge(60);//生存时间 60s
+        cookie.setPath(contextPath);//cookie的生效路径-整个项目都有效
+        response.addCookie(cookie);
+        // 将验证码存入Redis
+        String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
+        redisTemplate.opsForValue().set(redisKey, text, 60, TimeUnit.SECONDS);//设置时间60s，超过60s就失效了
+
+        // response将图片输出给浏览器
 
         response.setContentType("image/png");//声明给浏览器返回的是png图片
         try {
@@ -138,22 +142,23 @@ public class LoginController implements ForumConstant {
      * @param code
      * @param rememberme 就是登录页面的“记住我”，点上了就保存的时间长一点
      * @param model
-     * @param session 把用户打开页面生成的验证码存在session里，服务器把session的验证码取回来
+//     * @param session 把用户打开页面生成的验证码存在session里，服务器把session的验证码取回来
      * @param response 服务器把ticket放进cookie返回给浏览器
      * @return
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public String login(String username, String password, String code, boolean rememberme,
-                        Model model, HttpSession session, HttpServletResponse response) {
+                        Model model/*, HttpSession session*/, HttpServletResponse response,
+                        @CookieValue("kaptchaOwner") String kaptchaOwner ) {
         // 检查验证码
         //用户打开页面就会得到一个验证码，放进session里
-        String kaptcha = (String) session.getAttribute("kaptcha");
-//        System.out.println(kaptcha+code);
-//        String kaptcha = null;
-//        if (StringUtils.isNotBlank(kaptchaOwner)) {
-//            String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
-////            kaptcha = (String) redisTemplate.opsForValue().get(redisKey);
-//        }
+//        String kaptcha = (String) session.getAttribute("kaptcha");
+
+        String kaptcha = null;
+        if (StringUtils.isNotBlank(kaptchaOwner)) {
+            String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
+            kaptcha = (String) redisTemplate.opsForValue().get(redisKey);
+        }
 
         //equalsIgnoreCase字符串忽略大小写，验证码不分大小写
         if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {

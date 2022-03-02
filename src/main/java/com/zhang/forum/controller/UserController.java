@@ -2,6 +2,8 @@ package com.zhang.forum.controller;
 
 import com.zhang.forum.annotation.LoginRequired;
 import com.zhang.forum.entity.User;
+import com.zhang.forum.service.FollowService;
+import com.zhang.forum.service.LikeService;
 import com.zhang.forum.service.UserService;
 import com.zhang.forum.util.ForumConstant;
 import com.zhang.forum.util.ForumUtil;
@@ -49,6 +51,10 @@ public class UserController implements ForumConstant {
 
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private LikeService likeService;
+    @Autowired
+    private FollowService followService;
 
 //
 //    @Value("${qiniu.key.access}")
@@ -162,34 +168,34 @@ public class UserController implements ForumConstant {
         }
     }
 
-//    // 个人主页
-//    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
-//    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
-//        User user = userService.findUserById(userId);
-//        if (user == null) {
-//            throw new RuntimeException("该用户不存在!");
-//        }
-//
-//        // 用户
-//        model.addAttribute("user", user);
-//        // 点赞数量
-//        int likeCount = likeService.findUserLikeCount(userId);
-//        model.addAttribute("likeCount", likeCount);
-//
-//        // 关注数量
-//        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
-//        model.addAttribute("followeeCount", followeeCount);
-//        // 粉丝数量
-//        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
-//        model.addAttribute("followerCount", followerCount);
-//        // 是否已关注
-//        boolean hasFollowed = false;
-//        if (hostHolder.getUser() != null) {
-//            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
-//        }
-//        model.addAttribute("hasFollowed", hasFollowed);
-//
-//        return "/site/profile";
-//    }
+    // 个人主页
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("该用户不存在!");
+        }
+
+        // 用户
+        model.addAttribute("user", user);
+        // 点赞数量
+        int likeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("likeCount", likeCount);
+
+        // 关注数量
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+        // 粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount", followerCount);
+        // 是否已关注
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("hasFollowed", hasFollowed);
+
+        return "/site/profile";
+    }
 
 }

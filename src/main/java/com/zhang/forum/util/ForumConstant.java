@@ -20,12 +20,12 @@ public interface ForumConstant {
     /**
      * 默认状态的登录凭证的超时时间12h
      */
-    int DEFAULT_EXPIRED_SECONDS = 3600 * 12;
+    int DEFAULT_EXPIRED_SECONDS = 3600 * 120;
 
     /**
      * 记住状态的登录凭证超时时间 100天
      */
-    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 100;
+    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 1000;
 
     /**
      * 实体类型: 帖子

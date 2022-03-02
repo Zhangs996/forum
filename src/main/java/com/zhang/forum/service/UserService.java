@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -35,7 +36,10 @@ public class UserService implements ForumConstant {
     private TemplateEngine templateEngine;
 
     @Autowired
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate redisTemplate;
+
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
 
     @Value("${forum.path.domain}")
     //forum.path.domain=http://localhost:8080
@@ -50,7 +54,12 @@ public class UserService implements ForumConstant {
 
 
     public User findUserById(int id) {
-        return userMapper.selectById(id);
+//        return userMapper.selectById(id);
+        User user = getCache(id);
+        if (user == null) {
+            user = initCache(id);
+        }
+        return user;
     }
     public User findUserByName(String name){
         return userMapper.selectByName(name);
@@ -123,6 +132,7 @@ public class UserService implements ForumConstant {
 //        激活码跟传过来的激活码一样，那么激活成功
         } else if (user.getActivationCode().equals(code)) {
             userMapper.updateStatus(userId, 1);
+            clearCache(userId);
             return ACTIVATION_SUCCESS;//1
         } else {
 //         code不等，激活失败
@@ -176,20 +186,27 @@ public class UserService implements ForumConstant {
         loginTicket.setTicket(ForumUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1));
-        loginTicketMapper.insertLoginTicket(loginTicket);
+//        loginTicketMapper.insertLoginTicket(loginTicket);
 
         String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
-//        redisTemplate.opsForValue().set(redisKey, loginTicket);
+        redisTemplate.opsForValue().set(redisKey, loginTicket);//redis会把loginTicket自动序列化一个字符串，json格式的
 
         map.put("ticket", loginTicket.getTicket());
         return map;
     }
     public void logout(String ticket){
-        loginTicketMapper.updateStatus(ticket, 1);
+//        loginTicketMapper.updateStatus(ticket, 1);
+        String redisKey = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);//Object转loginTicket,向下转型需要强转
+        loginTicket.setStatus(0);
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
     }
 
+
     public LoginTicket findLoginTicket(String ticket) {
-        return loginTicketMapper.selectByTicket(ticket);
+//        return loginTicketMapper.selectByTicket(ticket);
+        String redisKey = RedisKeyUtil.getTicketKey(ticket);
+        return (LoginTicket) redisTemplate.opsForValue().get(redisKey);//Object转loginTicket,向下转型需要强转
     }
 
     /**
@@ -199,6 +216,50 @@ public class UserService implements ForumConstant {
      * @return
      */
     public int updateHeader(int userId, String headerUrl){
-        return userMapper.updateHeader(userId, headerUrl);
+        int rows =  userMapper.updateHeader(userId, headerUrl);
+        clearCache(userId);
+        return rows;
+
     }
+
+    // 1.优先从缓存中取值
+    private User getCache(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        return (User) redisTemplate.opsForValue().get(redisKey);
+    }
+
+    // 2.取不到时初始化缓存数据
+    private User initCache(int userId) {
+        User user = userMapper.selectById(userId);
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(redisKey, user, 3600, TimeUnit.SECONDS);
+        return user;
+    }
+
+    // 3.数据变更时清除缓存数据
+    private void clearCache(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(redisKey);
+    }
+
+//    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
+//        User user = this.findUserById(userId);
+//
+//        List<GrantedAuthority> list = new ArrayList<>();
+//        list.add(new GrantedAuthority() {
+//
+//            @Override
+//            public String getAuthority() {
+//                switch (user.getType()) {
+//                    case 1:
+//                        return AUTHORITY_ADMIN;
+//                    case 2:
+//                        return AUTHORITY_MODERATOR;
+//                    default:
+//                        return AUTHORITY_USER;
+//                }
+//            }
+//        });
+//        return list;
+//    }
 }

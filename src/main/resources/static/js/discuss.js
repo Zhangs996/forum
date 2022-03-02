@@ -6,12 +6,12 @@ $(function(){
 
 function like(btn, entityType, entityId, entityUserId, postId) {
     $.post(
-        CONTEXT_PATH + "/like",
+        CONTEXT_PATH + "/like",//点赞这个功能的访问路径就是访问了LikeController的like方法
         {"entityType":entityType,"entityId":entityId,"entityUserId":entityUserId,"postId":postId},
-        function(data) {
-            data = $.parseJSON(data);
+        function(data) {//处理controller.LikeController返回给自己的json字符串
+            data = $.parseJSON(data);//前端解析json字符串
             if(data.code == 0) {
-                $(btn).children("i").text(data.likeCount);
+                $(btn).children("i").text(data.likeCount);//得到button节点的子节点i，改这个数据
                 $(btn).children("b").text(data.likeStatus==1?'已赞':"赞");
             } else {
                 alert(data.msg);

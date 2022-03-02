@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 //登录凭证，在注解里也能写动态支持的sql
 @Mapper
 @Repository
-//@Deprecated//若某类或某方法加上该注解之后，表示此方法或类不再建议使用，调用时也会出现删除线，但并不代表不能用，只是说，不推荐使用，因为还有更好的方法可以调用。
+@Deprecated//若某类或某方法加上该注解之后，表示此方法或类不再建议使用，调用时也会出现删除线，但并不代表不能用，只是说，不推荐使用，因为还有更好的方法可以调用。
 public interface LoginTicketMapper {
 
     @Insert({

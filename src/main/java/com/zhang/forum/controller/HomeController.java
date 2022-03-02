@@ -4,7 +4,9 @@ import com.zhang.forum.entity.DiscussPost;
 import com.zhang.forum.entity.Page;
 import com.zhang.forum.entity.User;
 import com.zhang.forum.service.DiscussPostService;
+import com.zhang.forum.service.LikeService;
 import com.zhang.forum.service.UserService;
+import com.zhang.forum.util.ForumConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements ForumConstant {
 
     @Autowired
     private DiscussPostService discussPostService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
@@ -50,6 +55,10 @@ public class HomeController {
                 map.put("post", post);
                 User user = userService.findUserById(post.getUserId());
                 map.put("user", user);
+
+//                查帖子的赞
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount",likeCount);
 
                 discussPosts.add(map);
             }
