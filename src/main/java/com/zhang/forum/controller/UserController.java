@@ -56,52 +56,54 @@ public class UserController implements ForumConstant {
     @Autowired
     private FollowService followService;
 
-//
-//    @Value("${qiniu.key.access}")
-//    private String accessKey;
-//
-//    @Value("${qiniu.key.secret}")
-//    private String secretKey;
-//
-//    @Value("${qiniu.bucket.header.name}")
-//    private String headerBucketName;
-//
-//    @Value("${quniu.bucket.header.url}")
-//    private String headerBucketUrl;
 
+    @Value("${qiniu.key.access}")
+    private String accessKey;
+
+    @Value("${qiniu.key.secret}")
+    private String secretKey;
+
+    @Value("${qiniu.bucket.header.name}")
+    private String headerBucketName;
+
+    @Value("${qiniu.bucket.header.url}")
+    private String headerBucketUrl;
+
+    // 七牛云
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage(Model model) {
         // 上传文件名称
-//        String fileName = ForumUtil.generateUUID();
-//        // 设置响应信息
-//        StringMap policy = new StringMap();
-//        policy.put("returnBody", ForumUtil.getJSONString(0));
-//        // 生成上传凭证
-//        Auth auth = Auth.create(accessKey, secretKey);
-//        String uploadToken = auth.uploadToken(headerBucketName, fileName, 3600, policy);
-//
-//        model.addAttribute("uploadToken", uploadToken);
-//        model.addAttribute("fileName", fileName);
+        String fileName = ForumUtil.generateUUID();
+        // 设置响应信息
+        StringMap policy = new StringMap();
+        policy.put("returnBody", ForumUtil.getJSONString(0));
+        // 生成上传凭证，好让七牛云识别
+        Auth auth = Auth.create(accessKey, secretKey);//实例化凭证
+        String uploadToken = auth.uploadToken(headerBucketName, fileName, 3600, policy);//3600秒
+
+        model.addAttribute("uploadToken", uploadToken);
+        model.addAttribute("fileName", fileName);
 
         return "/site/setting";
     }
-//
-//    // 更新头像路径
-//    @RequestMapping(path = "/header/url", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String updateHeaderUrl(String fileName) {
-//        if (StringUtils.isBlank(fileName)) {
-//            return ForumUtil.getJSONString(1, "文件名不能为空!");
-//        }
-//
-//        String url = headerBucketUrl + "/" + fileName;
-//        userService.updateHeader(hostHolder.getUser().getId(), url);
-//
-//        return ForumUtil.getJSONString(0);
-//    }
+
+    // 七牛云 更新头像路径，异步的
+    @RequestMapping(path = "/header/url", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateHeaderUrl(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return ForumUtil.getJSONString(1, "文件名不能为空!");
+        }
+
+        String url = headerBucketUrl + "/" + fileName;
+        userService.updateHeader(hostHolder.getUser().getId(), url);
+
+        return ForumUtil.getJSONString(0);
+    }
 
 
+    //废弃
     @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImage, Model model) {
@@ -141,9 +143,8 @@ public class UserController implements ForumConstant {
         return "redirect:/index";
     }
 
-
+//    废弃
 //    向浏览器响应图片头像
-    // 废弃
 //    因为可以不登录访问别人的头像，所以这个不加@LoginRequired
     @RequestMapping(path = "/header/{fileName}", method = RequestMethod.GET)
     public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {

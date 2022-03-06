@@ -2,7 +2,7 @@ package com.zhang.forum.controller;
 
 import com.zhang.forum.entity.Event;
 import com.zhang.forum.entity.User;
-//import com.zhang.forum.event.EventProducer;
+import com.zhang.forum.event.EventProducer;
 import com.zhang.forum.service.LikeService;
 import com.zhang.forum.util.ForumConstant;
 import com.zhang.forum.util.ForumUtil;
@@ -27,8 +27,8 @@ public class LikeController implements ForumConstant {
     @Autowired
     private HostHolder hostHolder;
 
-//    @Autowired
-//    private EventProducer eventProducer;
+    @Autowired
+    private EventProducer eventProducer;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -51,23 +51,23 @@ public class LikeController implements ForumConstant {
         map.put("likeCount", likeCount);
         map.put("likeStatus", likeStatus);
 
-//        // 触发点赞事件
-//        if (likeStatus == 1) {
-//            Event event = new Event()
-//                    .setTopic(TOPIC_LIKE)
-//                    .setUserId(hostHolder.getUser().getId())
-//                    .setEntityType(entityType)
-//                    .setEntityId(entityId)
-//                    .setEntityUserId(entityUserId)
-//                    .setData("postId", postId);
-//            eventProducer.fireEvent(event);
-//        }
-//
-//        if(entityType == ENTITY_TYPE_POST) {
-//            // 计算帖子分数
-//            String redisKey = RedisKeyUtil.getPostScoreKey();
-//            redisTemplate.opsForSet().add(redisKey, postId);
-//        }
+        // 触发点赞事件,取消赞的话就不发送事件了
+        if (likeStatus == 1) {
+            Event event = new Event()
+                    .setTopic(TOPIC_LIKE)
+                    .setUserId(hostHolder.getUser().getId())
+                    .setEntityType(entityType)
+                    .setEntityId(entityId)
+                    .setEntityUserId(entityUserId)
+                    .setData("postId", postId);
+            eventProducer.fireEvent(event);
+        }
+
+        if(entityType == ENTITY_TYPE_POST) {
+            // 计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, postId);
+        }
 
         return ForumUtil.getJSONString(0, null, map);
     }

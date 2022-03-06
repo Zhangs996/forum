@@ -13,8 +13,8 @@
     <script>
         function send() {
             $.post(
-                "/forum/alpha/ajax",
-                {"name":"张三","age":23},
+                "/forum/alpha/ajax",//要访问的路径
+                {"name":"张三","age":23},//要向服务器提交的数据
                 function(data) {
                     console.log(typeof(data));
                     console.log(data);

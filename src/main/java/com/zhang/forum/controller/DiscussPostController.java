@@ -3,6 +3,7 @@ package com.zhang.forum.controller;
 import com.zhang.forum.entity.*;
 //import com.zhang.forum.event.EventProducer;
 //import com.zhang.forum.service.CommentService;
+import com.zhang.forum.event.EventProducer;
 import com.zhang.forum.service.CommentService;
 import com.zhang.forum.service.DiscussPostService;
 //import com.zhang.forum.service.LikeService;
@@ -43,8 +44,9 @@ public class DiscussPostController implements ForumConstant {
     @Autowired
     private LikeService likeService;
 
-//    @Autowired
-//    private EventProducer eventProducer;
+    @Autowired
+    private EventProducer eventProducer;
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -65,18 +67,18 @@ public class DiscussPostController implements ForumConstant {
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
 
-//        // 触发发帖事件
-//        Event event = new Event()
-//                .setTopic(TOPIC_PUBLISH)
-//                .setUserId(user.getId())
-//                .setEntityType(ENTITY_TYPE_POST)
-//                .setEntityId(post.getId());
-//        eventProducer.fireEvent(event);
-//
-//        // 计算帖子分数
-//        String redisKey = RedisKeyUtil.getPostScoreKey();
-//        redisTemplate.opsForSet().add(redisKey, post.getId());
-//
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
+
+        // 计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, post.getId());
+
         // 报错的情况,将来统一处理
         return ForumUtil.getJSONString(0, "发布成功!");
     }

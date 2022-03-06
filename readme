@@ -1,1 +1,22 @@
-just click note
+在启动项目之前需要启动三个东西
+
+\# 启动服务器 （先启动zookeeper服务器，再启动kafka） ！！！千万不要手动暴力关闭，用下面的命令关闭
+bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+bin\windows\kafka-server-start.bat config\server.properties
+
+启动elasticsearch   点击D:\elasticsearch-8.0.0\bin\elasticsearch.bat
+
+
+
+\# 关闭zookeeper服务器
+
+zookeeper-server-stop.bat
+
+
+
+\# 关闭kafka服务器
+
+kafka-server-stop.bat
+
+
+Then, just click note

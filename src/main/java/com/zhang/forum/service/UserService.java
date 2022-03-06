@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -185,7 +186,7 @@ public class UserService implements ForumConstant {
         loginTicket.setUserId(user.getId());
         loginTicket.setTicket(ForumUtil.generateUUID());
         loginTicket.setStatus(0);
-        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1));
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
 //        loginTicketMapper.insertLoginTicket(loginTicket);
 
         String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
@@ -198,8 +199,10 @@ public class UserService implements ForumConstant {
 //        loginTicketMapper.updateStatus(ticket, 1);
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);//Object转loginTicket,向下转型需要强转
-        loginTicket.setStatus(0);
+        loginTicket.setStatus(1);
         redisTemplate.opsForValue().set(redisKey, loginTicket);
+//        System.out.println("haha");
+//        System.out.println(redisTemplate.opsForValue().get(redisKey));
     }
 
 
@@ -242,24 +245,25 @@ public class UserService implements ForumConstant {
         redisTemplate.delete(redisKey);
     }
 
-//    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
-//        User user = this.findUserById(userId);
-//
-//        List<GrantedAuthority> list = new ArrayList<>();
-//        list.add(new GrantedAuthority() {
-//
-//            @Override
-//            public String getAuthority() {
-//                switch (user.getType()) {
-//                    case 1:
-//                        return AUTHORITY_ADMIN;
-//                    case 2:
-//                        return AUTHORITY_MODERATOR;
-//                    default:
-//                        return AUTHORITY_USER;
-//                }
-//            }
-//        });
-//        return list;
-//    }
+    // 用户权限管理
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
+        User user = this.findUserById(userId);
+
+        List<GrantedAuthority> list = new ArrayList<>();
+        list.add(new GrantedAuthority() {
+
+            @Override
+            public String getAuthority() {
+                switch (user.getType()) {
+                    case 1:
+                        return AUTHORITY_ADMIN;
+                    case 2:
+                        return AUTHORITY_MODERATOR;
+                    default:
+                        return AUTHORITY_USER;
+                }
+            }
+        });
+        return list;
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 
+
 @Document(indexName = "discusspost", shards = 6, replicas = 3)
 public class DiscussPost {
 
@@ -17,6 +18,8 @@ public class DiscussPost {
     private int userId;
 
     // 互联网校招
+    // analyzer 把一句话拆分更多的内容，用范围更大的分词器，用ik_max_word分词器
+    // searchAnalyzer 搜索的时候稍微拆分一下就行了，用ik_smart分词器
     @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String title;
 

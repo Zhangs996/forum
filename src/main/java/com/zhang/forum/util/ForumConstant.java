@@ -25,7 +25,7 @@ public interface ForumConstant {
     /**
      * 记住状态的登录凭证超时时间 100天
      */
-    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 1000;
+    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 15;
 
     /**
      * 实体类型: 帖子

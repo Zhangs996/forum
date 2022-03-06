@@ -49,7 +49,8 @@ public class AlphaController {
     }
 
     @RequestMapping("/http")
-    //为什么此时没有@ResponseBody呢，因为可以通过HttpServletResponse向浏览器输出对象
+    // 一般来说不加ResponseBody，return会默认响应html数据，加了就会在浏览器响应字符串
+    //为什么此时没有@ResponseBody呢，因为可以通过HttpServletResponse向浏览器输出对象，也就是说HttpServletResponse代替了@ResponseBody
     public void http(HttpServletRequest request, HttpServletResponse response) {
         // 获取请求数据
         // 获取请求方式
@@ -88,7 +89,7 @@ public class AlphaController {
     }
     // GET请求怎么处理
 
-    // 传进来/students?current=1&limit=20
+    // 传进来http://localhost:8080/forum/alpha/students?current=133&limit=2056
     @RequestMapping(path = "/students", method = RequestMethod.GET)
     @ResponseBody
 
@@ -102,7 +103,7 @@ public class AlphaController {
     }
 
     // 当参数成为路径的一部分，需要怎么获取呢，需要用到@PathVariable
-    // 比如/student/123
+    // 比如http://localhost:8080/forum/alpha/student/13
     @RequestMapping(path = "/student/{id}", method = RequestMethod.GET)
     @ResponseBody
     public String getStudent(@PathVariable("id") int id) {
@@ -111,7 +112,7 @@ public class AlphaController {
     }
 
 
-    // 如何响应POST请求,需要造一个表单，表单是以post方式提交  static/html/student.html
+    // 如何响应POST请求,需要造一个表单，表单是以post方式提交  http://localhost:8080/forum/html/student.html
     @RequestMapping(path = "/student", method = RequestMethod.POST)
     @ResponseBody
     public String saveStudent(String name, int age) {
@@ -154,7 +155,7 @@ public class AlphaController {
         return emp;
     }
 
-    // 相应一个List集合
+    // 响应一个List集合
     @RequestMapping(path = "/emps", method = RequestMethod.GET)
     @ResponseBody
     public List<Map<String, Object>> getEmps() {
@@ -179,9 +180,10 @@ public class AlphaController {
         list.add(emp);
 
         return list;
+        //在http://localhost:8080/forum/alpha/emps中会显示[{"name":"张三","salary":8000.0,"age":23},{"name":"李四","salary":9000.0,"age":24},{"name":"王五","salary":10000.0,"age":25}]
     }
 
-    // cookie示例
+    // cookie示例，往cookie里存值
     @RequestMapping(path = "/cookie/set", method = RequestMethod.GET)
     @ResponseBody
     public String setCookie(HttpServletResponse response) {
@@ -223,11 +225,14 @@ public class AlphaController {
     }
 
 //     ajax示例
+    //点击http://localhost:8080/forum/html/ajax-demo.html
     @RequestMapping(path = "/ajax", method = RequestMethod.POST)
     @ResponseBody
     public String testAjax(String name, int age) {
-        System.out.println(name);
+        System.out.println(name);//浏览器向服务器提交的数据
         System.out.println(age);
-        return ForumUtil.getJSONString(0, "操作成功!");
+        String jsonString = ForumUtil.getJSONString(0, "操作成功!");
+        System.out.println(jsonString);
+        return jsonString;//服务器向浏览器返回的数据，在ajax-demo的js里用console输出
     }
 }

@@ -5,11 +5,22 @@ import java.util.Map;
 
 public class Event {
 
+    // 事件的类型就是topic
     private String topic;
+
+    // 事件触发的人
     private int userId;
+
+    // 事件发生在哪个实体身上
     private int entityType;
+
+    // 实体的id
     private int entityId;
+
+    // 实体的作者
     private int entityUserId;
+
+    // 冗余字段，具有一定的扩展性
     private Map<String, Object> data = new HashMap<>();
 
     public String getTopic() {
@@ -18,7 +29,7 @@ public class Event {
 
     public Event setTopic(String topic) {
         this.topic = topic;
-        return this;
+        return this;//代替了有参构造器，比较灵活
     }
 
     public int getUserId() {
