@@ -26,7 +26,7 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
 //            获得方法对象
             Method method = handlerMethod.getMethod();
 //            尝试取这个注解
-            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);
+            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);//方法如果存在这样的注释，则返回指定类型的元素的注释，否则为null
 //            loginRequired != null代表这个方法是需要登录才能访问的，也就是说这个方法加了自定义注解
             if (loginRequired != null && hostHolder.getUser() == null) {
 //                项目名可以用配置文件得到也可以通过request拿到

@@ -88,6 +88,7 @@
     </appender>
 
     <logger name="com.zhang.forum" level="debug"/>
+    <logger name="org.apache.kafka" level="off" />
 
 <!--    根目录下的日志最少为info-->
     <root level="info">

@@ -7,7 +7,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Scanner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,6 +29,14 @@ public class SensitiveTests {
         text = "这里可以☆赌☆博☆,可以☆嫖☆娼☆,可以☆吸☆毒☆,可以☆开☆票☆,哈哈哈!";
         text = sensitiveFilter.filter(text);
         System.out.println(text);
+    }
+    @Test
+    public void teste(){
+        Scanner scanner = new Scanner(System.in);
+        if(scanner.hasNextInt()){
+            int t = scanner.nextInt();
+        }
+
     }
 
 }

@@ -1,7 +1,7 @@
 package com.zhang.forum.service;
 
 
-import com.zhang.forum.dao.LoginTicketMapper;
+//import com.zhang.forum.dao.LoginTicketMapper;
 import com.zhang.forum.dao.UserMapper;
 import com.zhang.forum.entity.LoginTicket;
 import com.zhang.forum.entity.User;
@@ -256,10 +256,13 @@ public class UserService implements ForumConstant {
             public String getAuthority() {
                 switch (user.getType()) {
                     case 1:
+                        System.out.println("AUTHORITY_ADMIN");
                         return AUTHORITY_ADMIN;
                     case 2:
+                        System.out.println("AUTHORITY_MODERATOR");
                         return AUTHORITY_MODERATOR;
                     default:
+                        System.out.println("AUTHORITY_USER");
                         return AUTHORITY_USER;
                 }
             }

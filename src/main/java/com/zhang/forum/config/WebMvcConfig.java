@@ -11,6 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
+    private DataInterceptor dataInterceptor;
+    @Autowired
     private AlphaInterceptor alphaInterceptor;
     @Autowired
     private LoginTicketInterceptor loginTicketInterceptor;
@@ -36,9 +38,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
 //
 //
-//        registry.addInterceptor(dataInterceptor)
-//                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
-//    }
+        registry.addInterceptor(dataInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 
 

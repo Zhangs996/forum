@@ -1,7 +1,6 @@
 package com.zhang.forum;
 
 import com.zhang.forum.service.AlphaService;
-import com.zhang.forum.service.AlphaService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,3 +30,4 @@ public class TransactionTests {
     }
 
 }
+

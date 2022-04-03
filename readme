@@ -1,5 +1,7 @@
 在启动项目之前需要启动三个东西
 
+cd kafka_2.13-3.1.0
+
 \# 启动服务器 （先启动zookeeper服务器，再启动kafka） ！！！千万不要手动暴力关闭，用下面的命令关闭
 bin\windows\zookeeper-server-start.bat config\zookeeper.properties
 bin\windows\kafka-server-start.bat config\server.properties
@@ -10,13 +12,14 @@ bin\windows\kafka-server-start.bat config\server.properties
 
 \# 关闭zookeeper服务器
 
-zookeeper-server-stop.bat
+bin\windows\zookeeper-server-stop.bat
 
 
 
 \# 关闭kafka服务器
 
-kafka-server-stop.bat
+bin\windows\kafka-server-stop.bat
 
-
+管理员账号密码zhangshuo12 123456
+普通用户账号密码zhange 123456           zhangq 123456
 Then, just click note

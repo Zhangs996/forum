@@ -13,7 +13,7 @@ public class RedisConfig {
 //    希望redis的键值对的类型<String,Object>
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
+        template.setConnectionFactory(factory);//使得redis具备连接数据库的功能
 
 //        主要配置的是序列化的方式
         // 设置key的序列化方式

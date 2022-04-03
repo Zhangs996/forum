@@ -43,7 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Foru
                         "/notice/**",
                         "/like",
                         "/follow",
-                        "/unfollow"
+                        "/unfollow",
+                        "/actuator/**"
                 )
                 .hasAnyAuthority(
                         AUTHORITY_USER,
